@@ -1,0 +1,22 @@
+---
+ - name: Update apt cache if needed.
+   apt: update_cache=yes cache_valid_time=3600
+   
+ - name: Upgrade dist
+   apt: upgrade=dist
+   
+ - name: Install pip
+   apt: name=python-pip state=installed
+   sudo: yes
+   
+ - name: Install libs and pacakges
+   apt: name={{ item }} state=present
+   with_items:
+     - curl
+     - vim
+     - git
+     - tmux
+     - golang
+   
+ - name: Reboot
+   shell: reboot
