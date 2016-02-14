@@ -1,18 +1,18 @@
 ---
  - name: Upgrade CentOS
    yum: name=* state=latest
-   
+
  - name: Groupinstall development
    yum: name="@Development tools" state=present
-   
+
  - name: Install desktop environment
    yum: name="@^gnome-desktop-environment" state=present
    when: desktop_env
-   
-# - name: Setting target to graphical
-#   service: name=graphical.target enabled=yes
-#   when: desktop_env
-   
+
+ - name: Setting target to graphical
+   shell: /usr/bin/systemctl set-default graphical.target
+   when: desktop_env
+
  - name: Install packages
    yum: name={{ item }} state=present
    with_items:
@@ -28,23 +28,34 @@
  - name: Setup dotfiles
    git: repo=https://github.com/larhauga/dotfiles.git
         dest="{{home}}/.config/dotfiles"
+ - name: Setup dotfiles
+   git: repo=https://github.com/larhauga/dotfiles.git
+        dest="/home/vagrant/.config/dotfiles"
+
  - name: Setup vim
    git: repo=https://github.com/larhauga/vimconf.git
         dest="{{home}}/.config/vimconf"
-        
+ - name: Setup vim
+   git: repo=https://github.com/larhauga/vimconf.git
+        dest="/home/vagrant/.config/vimconf"
+
  - name: Symlink vim
-   file: src={{home}}/{{ item.src }} dest={{home}}/{{ item.dest }} state=link
+   file: src={{ item.src }} dest=/{{ item.dest }} state=link force=yes
    with_items:
-    - { src: ".config/vimconf/.vimrc", dest: ".vimrc" }
-    - { src: ".config/dotfiles/bashrc", dest: ".bashrc" }
-    - { src: ".config/dotfiles/tmux.conf", dest: ".tmux.conf" }
-    - { src: ".config/dotfiles/gitconfig", dest: ".gitconfig" }
+    - { src: "{{home}}/.config/vimconf/.vimrc", dest: "{{home}}/.vimrc" }
+    - { src: "{{home}}/.config/dotfiles/bashrc", dest: "{{home}}/.bashrc" }
+    - { src: "{{home}}/.config/dotfiles/tmux.conf", dest: "{{home}}/.tmux.conf" }
+    - { src: "{{home}}/.config/dotfiles/gitconfig", dest: "{{home}}/.gitconfig" }
+    - { src: "/home/vagrant/.config/vimconf/.vimrc", dest: "/home/vagrant/.vimrc" }
+    - { src: "/home/vagrant/.config/dotfiles/bashrc", dest: "/home/vagrant/.bashrc" }
+    - { src: "/home/vagrant/.config/dotfiles/tmux.conf", dest: "/home/vagrant/.tmux.conf" }
+    - { src: "/home/vagrant/.config/dotfiles/gitconfig", dest: "/home/vagrant/.gitconfig" }
 
  - name: Change locale
    shell: /bin/localectl set-locale LANG=nb_NO.utf8 && /bin/localectl set-keymap no && /bin/localectl set-x11-keymap no executable=/bin/bash
- 
+
  - name: Set correct timezone
-   shell: /bin/timedatectlset-timezone Europe/Oslo
-   
+   shell: /bin/timedatectl set-timezone Europe/Oslo
+
  - name: Reboot
    shell: reboot
