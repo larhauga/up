@@ -16,11 +16,18 @@
  - name: Install packages
    yum: name={{ item }} state=present
    with_items:
+     - epel-release
      - tmux
      - python-virtualenv
      - ntp
      - git
      - net-tools
+     - gcc*
+     - dkms
+     - kernel-devel
+
+ - name: Experimental Reinstall virtualbox guest additions 
+   shell: /tmp/VBoxLinuxAdditions.run install --nox11 executable=/bin/bash
 
  - name: Add a new user
    user: name=lars shell=/bin/bash generate_ssh_key=yes append=yes groups=vagrant  
@@ -52,10 +59,18 @@
     - { src: "/home/vagrant/.config/dotfiles/gitconfig", dest: "/home/vagrant/.gitconfig" }
 
  - name: Change locale
-   shell: /bin/localectl set-locale LANG=nb_NO.utf8 && /bin/localectl set-keymap no && /bin/localectl set-x11-keymap no executable=/bin/bash
+   shell: /bin/localectl set-keymap no && /bin/localectl set-x11-keymap no executable=/bin/bash
 
  - name: Set correct timezone
    shell: /bin/timedatectl set-timezone Europe/Oslo
+
+ - name: Create code folder
+   file: path={{ home }}/{{ item }} state=directory
+   with_items:
+    - code
+    - env
+    - work
+ 
 
  - name: Reboot
    shell: reboot
