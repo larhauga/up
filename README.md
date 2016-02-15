@@ -13,4 +13,5 @@ After vagrant is installed run
 ## Usage
 
     vagrant up
+	vagrant vbguest --do install ? 
     vagrant destroy -f

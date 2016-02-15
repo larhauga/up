@@ -22,12 +22,7 @@
      - ntp
      - git
      - net-tools
-     - gcc*
-     - dkms
      - kernel-devel
-
- - name: Experimental Reinstall virtualbox guest additions 
-   shell: /tmp/VBoxLinuxAdditions.run install --nox11 executable=/bin/bash
 
  - name: Add a new user
    user: name=lars shell=/bin/bash generate_ssh_key=yes append=yes groups=vagrant  
