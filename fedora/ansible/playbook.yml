@@ -1,0 +1,12 @@
+---
+- hosts: all
+  gather_facts: yes
+  vars:
+    user: lars
+    home: "/home/{{user}}"
+    desktop_env: true
+  tasks:
+    - name: Set hostname
+      hostname: name=fedora_foo
+    - include: fedora_setup.yml
+    - include: fedora_desktop.yml
