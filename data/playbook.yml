@@ -12,7 +12,7 @@
   vars:
     user: lars
     home: "/home/{{user}}"
-    desktop_env: true
+    desktop_env: false
   tasks:
     - include: centos_setup.yml
     - include: centos_desktop.yml when: desktop_env

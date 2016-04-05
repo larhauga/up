@@ -1,18 +1,23 @@
 ---
  # https://github.com/BunsenLabs
 
- - name: Install desktop environment
+ #- name: Install desktop environment
    #dnf: name="@lxqt" state=latest
-   dnf: name="@openbox" state=latest
-   when: desktop_env
+ #  dnf: name="@openbox" state=latest
+ #  when: desktop_env
    
  - name: Install packages for desktop environment
    dnf: name={{item}} state=present
    with_items:
      #- xorg-x11-drv-vesa
-     - openbox-devel
+     - openbox
      - obconf
      - lightdm
+     - mksh
+     - Thunar
+     - firefox
+     - "@Basic Desktop"
+     # https://github.com/dylanaraps/dotfiles ? 
      #- "@Fedora Workstation"
 
 # - name: Installing desktop environment
@@ -81,9 +86,9 @@
    shell: systemctl set-default graphical.target executable=/bin/bash
    when: desktop_env
    
-# - name: Enable lightdm
-#   shell: systemctl enable lightdm.service executable=/bin/bash
-#   when: desktop_env
+ - name: Enable lightdm
+   shell: systemctl enable lightdm.service executable=/bin/bash
+   when: desktop_env
    
 
 #vi /etc/systemd/system/display-manager.service
