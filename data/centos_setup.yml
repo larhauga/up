@@ -5,38 +5,9 @@
  - name: Groupinstall development
    yum: name="@Development tools" state=present
 
- - name: Install desktop environment
-   yum: name="@^gnome-desktop-environment" state=present
-   when: desktop_env
-   
-# - name: Install desktop environment
-#   yum: name="@X Window System" state=present
-#   when: desktop_env 
-# echo "exec /usr/bin/opebox-session" >> ~/.xinitrc
-
-# - name: Setting target to graphical
-#   shell: /usr/bin/systemctl set-default graphical.target
-#   when: desktop_env
-
  - name: Adding epel
    yum: name=epel-release state=present
  
- # https://github.com/BunsenLabs
- - name: Installing desktop environment
-   yum: name={{item}} state=present
-   with_items:
-    - openbox
-    - conky
-    #lightdm
-#yum install -y lightdm
-# systemctl set-default graphical.target# rm '/etc/systemd/system/default.target'
-# ln -s '/usr/lib/systemd/system/graphical.target' '/etc/systemd/system/default.target'
-# systemctl enable lightdm.service
-# startx
-#vi /etc/systemd/system/display-manager.service
-#[Service]
-#;Restart=always
-
  - name: Install packages
    yum: name={{ item }} state=present
    with_items:
@@ -48,10 +19,20 @@
      - kernel-devel
      - dkms
      - vim
+     - wget
+     - mlocate
+     - docker
 
  - name: Add a new user
-   user: name=lars shell=/bin/bash generate_ssh_key=yes append=yes groups=vagrant  
+   user: name={{user}} shell=/bin/bash generate_ssh_key=yes append=yes groups=vagrant  
 
+ - name: Adding user to sudoers
+   lineinfile: dest=/etc/sudoers
+               state=present
+               regexp="^{{user}}" 
+               line="{{user}} ALL=(ALL) NOPASSWD:ALL"
+
+   
  - name: Setup dotfiles
    git: repo=https://github.com/larhauga/dotfiles.git
         dest="{{home}}/.config/dotfiles"

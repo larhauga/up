@@ -9,6 +9,8 @@ Vagrant.configure(2) do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.gui = true
     vb.memory = "2048"
+    #vb.customize ["modifyvm", :id, "--accelerate3d", "on" ]
+    vb.customize ["modifyvm", :id, "--clipboard", "bidirectional" ]
   end
   
   config.vm.synced_folder "data", "/data"

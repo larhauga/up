@@ -1,0 +1,81 @@
+---
+ # https://github.com/BunsenLabs
+
+# - name: Install desktop environment
+#   yum: name="@^gnome-desktop-environment" state=present
+#   when: desktop_env
+
+ - name: Installing desktop environment
+   yum: name={{item}} state=present
+   with_items:
+    - openbox
+    - conky
+    - lightdm
+    - glade
+    - glade-devel
+    - openbox-devel
+    - startup-notification-devel
+    - gtk2-devel
+    - libglade2-devel
+    - "@X Window System"
+    - gnome-terminal
+    - terminator
+   when: desktop_env
+   
+   
+# Configuring and making obconf
+ - name: Get obconf
+   shell: wget http://openbox.org/dist/obconf/obconf-2.0.4.tar.gz -o /tmp/obconf.tar.gz executable=/bin/bash
+   when: desktop_env
+   
+ - name: Untar
+   shell: tar -xvzf /tmp/obconf.tar.gz executable=/bin/bash
+   
+ - name: Do some symlinking to fix an ld error (ld lICE --verbose)
+   file: src={{item.src}} dest={{item.dest}} state=link
+   with_items:
+    - { src: /usr/lib64/libSM.so.6, dest: /usr/lib64/libSM.so }
+    - { src: /usr/lib64/libICE.so.6, dest: /usr/lib64/libICE.so }
+   
+ - name: Configure obconf
+   shell: ./configure --prefix=/usr chdir=/tmp/obconf-2.0.4
+   
+ - name: Making obconf
+   shell: make chdir=/tmp/obconf-2.0.4
+ 
+ - name: Install obconf
+   shell: make install chdir=/tmp/obconf-2.0.4
+   
+ - name: Update mime and desktop database
+   shell: update-mime-database /usr/share/mime && update-desktop-database /usr/share/applications
+ 
+# Making compton
+# https://github.com/chjj/compton.git
+
+ - name: getting compton
+   git: repo=https://github.com/chjj/compton.git
+        dest=/tmp/compton
+        
+ - name: Installing package dependencies for compton
+   yum: name={{item}} state=present
+   with_items:
+    - libconfig-devel
+    - dbus-devel
+    - pcre-devel
+ 
+ - name: Moving compiled compton to /usr/bin
+   shell: cp /tmp/compton/compton /usr/bin
+ 
+ # Enable desktop environment
+ - name: Setting graphical.target as default
+   shell: systemctl set-default graphical.target executable=/bin/bash
+   when: desktop_env
+   
+ - name: Enable lightdm
+   shell: systemctl enable lightdm.service executable=/bin/bash
+   when: desktop_env
+   
+
+#vi /etc/systemd/system/display-manager.service
+#[Service]
+#;Restart=always

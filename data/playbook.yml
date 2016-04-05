@@ -10,8 +10,9 @@
       
 - hosts: os_CentOS
   vars:
-    user: "lars"
+    user: lars
     home: "/home/{{user}}"
     desktop_env: true
   tasks:
     - include: centos_setup.yml
+    - include: centos_desktop.yml when: desktop_env
