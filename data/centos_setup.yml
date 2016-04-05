@@ -21,22 +21,6 @@
  - name: Adding epel
    yum: name=epel-release state=present
  
- # https://github.com/BunsenLabs
- - name: Installing desktop environment
-   yum: name={{item}} state=present
-   with_items:
-    - openbox
-    - conky
-    #lightdm
-#yum install -y lightdm
-# systemctl set-default graphical.target# rm '/etc/systemd/system/default.target'
-# ln -s '/usr/lib/systemd/system/graphical.target' '/etc/systemd/system/default.target'
-# systemctl enable lightdm.service
-# startx
-#vi /etc/systemd/system/display-manager.service
-#[Service]
-#;Restart=always
-
  - name: Install packages
    yum: name={{ item }} state=present
    with_items:
